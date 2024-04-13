@@ -10,113 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_28_149849) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_10_149844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
-    t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
-  end
-
-  create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
-    t.bigint "byte_size", null: false
-    t.string "checksum"
-    t.datetime "created_at", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "active_storage_variant_records", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.string "variation_digest", null: false
-    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "questions", force: :cascade do |t|
-    t.text "description", null: false
-    t.string "aasm_state"
-    t.bigint "user_id", null: false
-    t.bigint "service_id", null: false
-    t.index ["service_id"], name: "index_questions_on_service_id"
-    t.index ["user_id"], name: "index_questions_on_user_id"
-  end
-
-  create_table "ratings", force: :cascade do |t|
-    t.text "description", null: false
-    t.string "aasm_state"
-    t.bigint "user_id", null: false
-    t.bigint "service_id", null: false
-    t.index ["service_id"], name: "index_ratings_on_service_id"
-    t.index ["user_id"], name: "index_ratings_on_user_id"
-  end
-
-  create_table "requests", force: :cascade do |t|
-    t.datetime "date", null: false
-    t.string "aasm_state"
-    t.bigint "service_id", null: false
-    t.bigint "user_id", null: false
-    t.index ["service_id"], name: "index_requests_on_service_id"
-    t.index ["user_id"], name: "index_requests_on_user_id"
-  end
-
-  create_table "service_types", force: :cascade do |t|
-    t.string "name", null: false
-  end
-
-  create_table "services", force: :cascade do |t|
-    t.string "title", null: false
-    t.text "description", null: false
-    t.string "images"
-    t.decimal "price", precision: 10, scale: 2, null: false
-    t.string "aasm_state"
-    t.bigint "service_type_id", null: false
-    t.bigint "user_id", null: false
-    t.index ["service_type_id"], name: "index_services_on_service_type_id"
-    t.index ["user_id"], name: "index_services_on_user_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "role", default: 2
-    t.string "aasm_state"
-    t.string "name", null: false
-    t.string "last_name", null: false
-    t.text "address", null: false
-    t.string "phone", null: false
-    t.string "avatar"
+  create_table "comments", force: :cascade do |t|
+    t.text "body", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "jti", null: false
-    t.string "document_type", null: false
-    t.string "dni", null: false
-    t.index ["dni"], name: "index_users_on_dni", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["jti"], name: "index_users_on_jti", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.bigint "feature_id", null: false
+    t.index ["feature_id"], name: "index_comments_on_feature_id"
   end
 
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "questions", "services"
-  add_foreign_key "questions", "users"
-  add_foreign_key "ratings", "services"
-  add_foreign_key "ratings", "users"
-  add_foreign_key "requests", "services"
-  add_foreign_key "requests", "users"
-  add_foreign_key "services", "service_types"
-  add_foreign_key "services", "users"
+  create_table "features", force: :cascade do |t|
+    t.string "place", null: false
+    t.string "mag_type", null: false
+    t.string "title", null: false
+    t.decimal "longitude", null: false
+    t.decimal "latitude", null: false
+    t.string "external_url", null: false
+    t.decimal "magnitude", null: false
+    t.string "external_id", null: false
+    t.string "time"
+    t.boolean "tsunami"
+    t.index ["external_id"], name: "index_features_on_external_id", unique: true
+  end
+
+  add_foreign_key "comments", "features"
 end
