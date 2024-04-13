@@ -1,4 +1,4 @@
-# app/views/categories/index.json.jbuilder
+# app/views/features/index.json.jbuilder
 json.data do
   json.array! @features do |feature|
     json.id feature.id

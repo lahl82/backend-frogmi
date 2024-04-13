@@ -1,11 +1,10 @@
-# typed: strict
 # frozen_string_literal: true
 
 class FeaturesController < ApplicationController
   ActionController::Parameters.action_on_unpermitted_parameters = false
 
   def index
-    @current_page = pagination_params[:page]
+    @current_page = pagination_params[:page] || 1
     @total = Feature.page(@current_page).total_pages
     @per_page = Feature.page(@current_page).limit_value
 
@@ -15,7 +14,11 @@ class FeaturesController < ApplicationController
   def refresh
     Features::EntryPoint.call
 
-    @features = Feature.all
+    @current_page = pagination_params[:page] || 1
+    @total = Feature.page(@current_page).total_pages
+    @per_page = Feature.page(@current_page).limit_value
+
+    @features = Feature.page(@current_page)
   end
 
   def show
