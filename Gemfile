@@ -18,6 +18,7 @@ gem 'rack-cors'
 gem 'rails', '~> 7.1.0'
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
+gem 'sidekiq'
 gem "typhoeus"
 
 # Use Redis adapter to run Action Cable in production

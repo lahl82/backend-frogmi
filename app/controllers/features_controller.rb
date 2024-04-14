@@ -3,49 +3,69 @@
 class FeaturesController < ApplicationController
   ActionController::Parameters.action_on_unpermitted_parameters = false
 
+  # GET /feature
   def index
     @current_page = pagination_params[:page] || 1
-    @total = Feature.page(@current_page).total_pages
-    @per_page = Feature.page(@current_page).limit_value
+    @per_page = pagination_params[:per_page] || 25
 
-    @features = Feature.page(@current_page)
+    prepare_features
   end
 
+  # GET /feature/refresh
   def refresh
-    Features::EntryPoint.call
+    RefreshEarthquakeFeaturesJob.perform_async
 
-    @current_page = pagination_params[:page] || 1
-    @total = Feature.page(@current_page).total_pages
-    @per_page = Feature.page(@current_page).limit_value
+    render nothing: true, status: :ok
 
-    @features = Feature.page(@current_page)
   end
 
-  def show
-    @feature = Feature.find(params[:id])
-  end
+  def prepare_features
+    mag_type = feature_params[:mag_type]
 
-  def create_comment
-    feature = Feature.new(feature_params)
-
-    if feature.save
-      render json: feature, status: :ok
+    if mag_type.present?
+      @total = Feature.where(mag_type:).page(@current_page).per(@per_page).total_pages
+      @current_page = @total if @current_page.to_i > @total
+      @features = Feature.where(mag_type:).order(:time).page(@current_page).per(@per_page)
     else
-      render json: { error: 'Error creating Feature' }, status: :not_found
+      @total = Feature.page(@current_page).per(@per_page).total_pages
+      @features = Feature.order(:time).page(@current_page).per(@per_page)
     end
   end
 
+  # GET /feature/:id
+  def show
+    @feature = Feature.find(feature_params[:id])
+  end
+
+  # POST /feature/:id/comments
+  def create_comment
+    @feature = Feature.find(feature_params[:id])
+
+    comment = @feature.comments.new(comment_params)
+
+    if comment.save
+      render json: comment, status: :ok
+    else
+      render json: { error: 'Error creating comment' }, status: :not_found
+    end
+  end
+
+  # GET /feature/:id/comments
   def comments
-    comments = Comment.where(feature_id: params[:id])
+    comments = Comment.where(feature_id: feature_params[:id])
 
     render json: comments
   end
 
   def feature_params
-    params.permit(:title, :description, :price, :feature_type_id, :user_id)
+    params.permit(:id, :mag_type)
+  end
+
+  def comment_params
+    params.permit(:body)
   end
 
   def pagination_params
-    params.permit(:page)
+    params.permit(:page, :per_page)
   end
 end

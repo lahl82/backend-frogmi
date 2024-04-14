@@ -1,8 +1,22 @@
-# app/views/categories/show.json.jbuilder
-json.id @service.id
-json.title @service.title
-json.description @service.description
-json.price @service.price
-json.service_type @service.service_type.name
-json.service_type_id @service.service_type_id
-json.user_id @service.user_id
+# app/views/features/show.json.jbuilder
+json.id @feature.id
+json.type 'Feature'
+
+json.attributes do
+  json.external_id @feature.external_id
+  json.magnitude @feature.magnitude
+  json.place @feature.place
+  json.time @feature.time
+  json.tsunami @feature.tsunami
+  json.mag_type @feature.mag_type
+  json.title @feature.title
+
+  json.coordinates do
+    json.longitude @feature.longitude
+    json.latitude @feature.latitude
+  end
+end
+
+json.links do
+  json.external_url @feature.external_url
+end
