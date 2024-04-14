@@ -39,6 +39,8 @@ class FeaturesController < ApplicationController
 
   # POST /feature/:id/comments
   def create_comment
+    render nothing: true, status: :no_content if comment_params[:body].empty?
+
     @feature = Feature.find(feature_params[:id])
 
     comment = @feature.comments.new(comment_params)
